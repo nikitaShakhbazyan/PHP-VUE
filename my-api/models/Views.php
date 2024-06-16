@@ -12,6 +12,8 @@ use Yii;
  * @property int|null $website_views
  * @property int|null $time_spent
  * @property int|null $btn_clicked
+ * @property string|null $OS
+ * @property string|null $IP
  */
 class Views extends \yii\db\ActiveRecord
 {
@@ -30,6 +32,7 @@ class Views extends \yii\db\ActiveRecord
     {
         return [
             [['count', 'website_views', 'time_spent', 'btn_clicked'], 'integer'],
+            [['OS', 'IP'], 'string'],
         ];
     }
 
@@ -44,6 +47,8 @@ class Views extends \yii\db\ActiveRecord
             'website_views' => 'Website Views',
             'time_spent' => 'Time Spent',
             'btn_clicked' => 'Button Clicked',
+            'OS' => 'Operating System',
+            'IP' => 'IP Address',
         ];
     }
 }
