@@ -26,67 +26,65 @@
 </template>
 
 <script>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 
 export default {
-  data() {
-    return {
-      buttonClickCount: 0,
-      startTime: new Date(),
-      endTime: null,
-      websiteViews: 0
-    };
-  },
-  mounted() {
-    this.websiteViews = parseInt(localStorage.getItem('visits')) || 0;
-    this.websiteViews++;
-    localStorage.setItem('visits', this.websiteViews.toString());
-    console.log('Количество посещений:', this.websiteViews);
-  },
-  beforeDestroy() {
-    window.removeEventListener('beforeunload', this.sendingData());
-    console.log('Количество посещений:', JSON.stringify(this.data));
-  },
-  methods: {
-    handleButtonClick(buttonName) {
-      this.buttonClickCount++;
-      this.endTime = new Date();
-      this.sendDataToServer();
-    },
-    async sendDataToServer() {
-      const timeSpentMs = this.endTime - this.startTime;
+  setup() {
+    const buttonClickCount = ref(0);
+    const startTime = ref(new Date());
+    const endTime = ref(null);
+    const websiteViews = ref(0);
+    const visibleTime = ref(0);
+    let visibilityStartTime = new Date();
 
-      const os = this.getOperatingSystem();
+    const handleButtonClick = async (buttonName) => {
+      buttonClickCount.value++;
+      endTime.value = new Date();
+      await sendDataToServer();
+    };
+
+    const sendDataToServer = async () => {
+      const totalTimeSpentMs = visibleTime.value + (new Date() - visibilityStartTime);
+      const os = getOperatingSystem();
 
       let ip;
       try {
-        ip = await this.getClientIpAddress();
+        ip = await getClientIpAddress();
       } catch (error) {
         console.error("Ошибка при получении IP-адреса:", error);
         ip = 'Unknown';
       }
 
       const data = {
-        website_views: this.websiteViews,
-        time_spent: parseInt(Math.round(timeSpentMs / 1000)),
-        btn_clicked: this.buttonClickCount,
+        website_views: websiteViews.value,
+        time_spent: parseInt(Math.round(totalTimeSpentMs / 1000)),
+        btn_clicked: buttonClickCount.value,
         OS: os,
         IP: ip
       };
 
-      const sendingData = axios.post("http://localhost:8081/views", data)
-        .then(response => {
-          if (response.status === 200 || response.status === 201) {
-            console.log("Данные успешно отправлены на сервер");
-          } else {
-            console.error("Не удалось отправить данные:", response.statusText);
-          } 
-        })
-        .catch(error => {
-          console.error("Ошибка:", error);
-        });
-    },
-    getOperatingSystem() {
+      try {
+        const response = await axios.post("http://localhost:8081/views", data);
+        if (response.status === 200 || response.status === 201) {
+          console.log("Данные успешно отправлены на сервер");
+        } else {
+          console.error("Не удалось отправить данные:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Ошибка:", error);
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        visibleTime.value += new Date() - visibilityStartTime;
+      } else {
+        visibilityStartTime = new Date();
+      }
+    };
+
+    const getOperatingSystem = () => {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       if (/android/i.test(userAgent)) {
         return "Android";
@@ -104,8 +102,9 @@ export default {
         return "Linux";
       }
       return "Unknown";
-    },
-    getClientIpAddress() {
+    };
+
+    const getClientIpAddress = () => {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "https://api64.ipify.org?format=json", true);
@@ -122,7 +121,30 @@ export default {
         };
         xhr.send();
       });
-    }
+    };
+
+    onMounted(() => {
+      websiteViews.value = parseInt(localStorage.getItem('visits')) || 0;
+      websiteViews.value++;
+      localStorage.setItem('visits', websiteViews.value.toString());
+      console.log('Количество посещений:', websiteViews.value);
+
+      window.addEventListener('beforeunload', sendDataToServer);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('beforeunload', sendDataToServer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    });
+
+    return {
+      buttonClickCount,
+      startTime,
+      endTime,
+      websiteViews,
+      handleButtonClick
+    };
   }
 };
 </script>
