@@ -29,7 +29,7 @@ class Views extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['count', 'website_views', 'time_spent', 'btn_clicked'], 'integer'], // Исправлено
+            [['count', 'website_views', 'time_spent', 'btn_clicked'], 'integer'],
         ];
     }
 

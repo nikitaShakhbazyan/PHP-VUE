@@ -64,7 +64,7 @@ export default {
             console.log("Данные успешно отправлены на сервер");
           } else {
             console.error("Не удалось отправить данные:", response.statusText);
-          }
+          } 
         })
         .catch(error => {
           console.error("Ошибка:", error);
