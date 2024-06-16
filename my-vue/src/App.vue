@@ -128,7 +128,6 @@ export default {
       websiteViews.value++;
       localStorage.setItem('visits', websiteViews.value.toString());
       console.log('Количество посещений:', websiteViews.value);
-
       window.addEventListener('beforeunload', sendDataToServer);
       document.addEventListener('visibilitychange', handleVisibilityChange);
     });
