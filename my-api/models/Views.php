@@ -14,6 +14,7 @@ use Yii;
  * @property int|null $btn_clicked
  * @property string|null $OS
  * @property string|null $IP
+ * @property string|null $Browser
  */
 class Views extends \yii\db\ActiveRecord
 {
@@ -32,7 +33,7 @@ class Views extends \yii\db\ActiveRecord
     {
         return [
             [['count', 'website_views', 'time_spent', 'btn_clicked'], 'integer'],
-            [['OS', 'IP'], 'string'],
+            [['OS', 'IP','Browser'], 'string'],
         ];
     }
 
@@ -49,6 +50,7 @@ class Views extends \yii\db\ActiveRecord
             'btn_clicked' => 'Button Clicked',
             'OS' => 'Operating System',
             'IP' => 'IP Address',
+            'Browser' => 'Browser'
         ];
     }
 }

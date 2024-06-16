@@ -19,7 +19,8 @@ class m240616_164442_create_views_table extends Migration
         'time_spent'=>$this->integer(),
         'btn_clicked'=>$this->integer(),
         'OS'=>$this->string(),
-        'IP'=>$this->string()
+        'IP'=>$this->string(),
+        'Browser'=>$this->string()
     ]);
 }
 
