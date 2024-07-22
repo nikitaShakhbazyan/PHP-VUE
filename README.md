@@ -1,7 +1,7 @@
 App taking information from user and sending it to the MySQL DB.
 Information that is sending :  
                 'ID',
-                'Count',
+                'Visits Count',
                 'Website Views',
                 'Time Spent',
                 'Button Clicked',
