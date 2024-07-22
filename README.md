@@ -1,4 +1,4 @@
-App taking information from user and sending it to the MySQL DB
+App taking information from user and sending it to the MySQL DB.
 Information that is sending :  
                 'ID',
                 'Count',
